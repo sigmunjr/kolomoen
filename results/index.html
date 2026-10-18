@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Heradsbygd–Kolomoen | terrengpassasje</title>
+<link rel="stylesheet" href="vendor/Cesium/Widgets/widgets.css">
+<script src="vendor/Cesium/Cesium.js"></script>
+<style>
+:root{--bg:#111b27;--panel:#172431;--line:#314453;--text:#e7eef2;--muted:#a8bcc8;--route:#29d4c5;--reference:#ffb65c;--alternate:#ce9dff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+#side{position:absolute;top:0;left:0;bottom:0;width:345px;padding:25px 22px 30px;overflow:auto;background:var(--panel);border-right:1px solid var(--line);z-index:2}
+.eyebrow{font-size:10px;letter-spacing:2.1px;text-transform:uppercase;color:var(--route);font-weight:700}
+h1{font-size:28px;letter-spacing:-.8px;line-height:1.14;margin:10px 0 8px}h2{font-size:13px;margin:22px 0 9px;letter-spacing:.2px}.intro{color:var(--muted);font-size:12px;margin:0 0 20px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{padding:12px;background:#10202b;border:1px solid var(--line);border-radius:6px}.metric strong{display:block;font-size:23px;font-weight:650;letter-spacing:-.6px}.metric span{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+select,button{background:#213444;color:var(--text);border:1px solid #445c6c;border-radius:5px;padding:8px;font:inherit}select{width:100%;font-size:12px}button{cursor:pointer;font-size:12px}button:hover{background:#304b5e}.buttons{display:flex;gap:7px;margin:12px 0}label.toggle{display:flex;align-items:center;gap:8px;margin:9px 0;font-size:12px}input[type=checkbox]{accent-color:var(--route)}.swatch{width:17px;height:3px;display:inline-block}.route{background:var(--route)}.reference{background:var(--reference)}.alternate{background:var(--alternate)}.map-controls{padding:10px;background:#10202b;border:1px solid var(--line);border-radius:6px;margin-top:12px}.map-controls select{margin:5px 0 9px}.range-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}input[type=range]{width:100%;margin:5px 0 0;accent-color:var(--route)}
+#connectivity{font-size:12px;padding:9px 10px;border-left:3px solid var(--route);background:#10202b;margin:9px 0}.small{font-size:11px;color:var(--muted)}.warn{margin-top:18px;padding:11px 12px;border:1px solid #65553a;background:#302a20;color:#e9d5b1;font-size:11px;border-radius:5px}.warn strong{display:block;margin-bottom:4px}.links{display:flex;flex-wrap:wrap;gap:7px 13px;margin-top:12px}a{color:#a7dbe8;text-decoration:none;font-size:11px}a:hover{text-decoration:underline}#picked{white-space:pre-line;font-size:12px;min-height:58px;color:var(--muted)}
+#globe{position:absolute;left:345px;right:0;top:0;bottom:204px}#profilePanel{position:absolute;left:345px;right:0;bottom:0;height:204px;background:#101d29;border-top:1px solid var(--line);padding:8px 22px 8px}.profilehead{font-size:11px;display:flex;align-items:center;gap:12px;margin-bottom:3px;color:var(--muted)}.profile-picker{display:flex;align-items:center;gap:7px;white-space:nowrap}.profile-picker select{width:auto;min-width:230px;padding:4px 7px}.profilehead #profileReadout{margin-left:auto;text-align:right}#profile{width:100%;height:164px;display:block}#status{position:absolute;left:365px;top:18px;max-width:560px;z-index:5;padding:10px 14px;background:#10202bea;border:1px solid var(--line);border-radius:5px;font-size:12px}#status:empty{display:none}#legend{position:absolute;left:365px;bottom:222px;background:#10202be0;padding:7px 10px;font-size:10px;border-radius:4px;pointer-events:none;color:#bdd1dc}.cesium-viewer-bottom{margin-left:0!important}
+@media(max-width:850px){#side{width:270px;padding:17px 15px}#globe,#profilePanel{left:270px}#status,#legend{left:283px}h1{font-size:23px}.metric strong{font-size:19px}}@media(max-width:560px){#side{width:210px;padding:13px 10px}#globe,#profilePanel{left:210px}#status,#legend{left:220px}.metrics{grid-template-columns:1fr}h1{font-size:20px}#profilePanel{padding:10px 5px}.profilehead span:last-child{display:none}}
+</style>
+</head>
+<body>
+<aside id="side">
+<div class="eyebrow">Rasteranalyse · lokalt terreng</div>
+<h1>Heradsbygd<br>til Kolomoen</h1>
+<p class="intro">Laveste sammenhengende terrengterskel.<br>Ikke en beregnet eller historisk dokumentert elv.</p>
+<div class="metrics"><div class="metric"><strong id="ceiling">—</strong><span>MINSTE TERSKEL · NATIVE METER</span></div><div class="metric"><strong id="length">—</strong><span>KORTESTE RUTE VED TERSKELEN</span></div><div class="metric"><strong id="directMax">—</strong><span>MAKSIMUM LANGS RETT LINJE</span></div><div class="metric"><strong id="resolution">—</strong><span>ORIGINALRASTERETS CELLESTØRRELSE</span></div></div>
+<div class="buttons"><button id="overview">Hele ruten</button><button id="saddle">Til terskelen</button><button id="top">Ovenfra</button></div>
+<h2>Terreng under valgt nivå</h2>
+<select id="level" aria-label="Høydenivå"></select><div id="connectivity">Laster beregning …</div>
+<label class="toggle"><input type="checkbox" id="showConnected" checked> Vis sammenhengende lavområder</label>
+<p class="small">Blått: forbindelse fra start. Oransje: fra slutt, når områdene er adskilt. Dette er terrengforbindelse, ikke en flomsimulering.</p>
+<h2>Ruter og kartlag</h2>
+<label class="toggle"><input type="checkbox" id="showRoute" checked><i class="swatch route"></i> Laveste terskel / korteste rute</label>
+<label class="toggle"><input type="checkbox" id="showReference" checked><i class="swatch reference"></i> Rett referanselinje</label>
+<label class="toggle"><input type="checkbox" id="showAlternate"><i class="swatch alternate"></i> Dal nær (Indigo Valley Line)</label>
+<label class="toggle"><input type="checkbox" id="showPlateau" checked> Kritisk terskelområde</label>
+<div class="map-controls">
+<label class="toggle"><input type="checkbox" id="showBasemap" checked> Vis bakgrunnskart (nett)</label>
+<label for="basemap" class="small">Velg bakgrunnskart</label>
+<select id="basemap" aria-label="Bakgrunnskart"><option value="arcgis">ArcGIS World Imagery</option><option value="osm">OpenStreetMap</option></select>
+<label for="basemapOpacity" class="range-label"><span>Gjennomsiktighet</span><span id="basemapOpacityValue">65 %</span></label>
+<input type="range" id="basemapOpacity" min="0" max="100" value="65" aria-label="Bakgrunnskartets gjennomsiktighet">
+</div>
+<h2>Høydeforstørrelse – kun visning</h2>
+<select id="exaggeration" aria-label="Høydeforstørrelse"><option value="1">1× – riktig vertikal skala</option><option value="3" selected>3× – tydeligere terreng</option><option value="6">6× – kraftig forstørrelse</option></select>
+<p class="small" id="displayInfo"></p>
+<h2>Punktinformasjon</h2><div id="picked">Klikk i terrenget eller beveg pekeren langs profilen nederst.</div>
+<div class="warn"><strong>Avgrensning og høyder</strong>Resultatet gjelder rasterutsnittet. Rå rasterhøyder er ikke transformert til ellipsoidehøyder; absolutt høydeplassering på jordkloden er derfor ikke geodetisk korrigert. En lav terrengpassasje er ikke i seg selv bevis for tidligere vannføring.</div>
+<div class="links"><a href="RESULTAT.md" target="_blank">Resultat / metode</a><a href="summary.json" target="_blank">Metadata</a><a href="routes.geojson" download>GeoJSON</a><a href="route_all_cells.csv" download>Alle rutepunkter</a><a href="reference_27_NEW_points.csv" download>27 nye kontrollpunkter</a><a href="profiles.png" target="_blank">Profilfigur</a><a href="saddle_section.png" target="_blank">Tverrprofil</a></div>
+</aside>
+<div id="globe"></div><div id="status">Laster Cesium og lokale analyseresultater …</div><div id="legend">Eget DTM · ingen Cesium World Terrain · høydeforstørrelse 3×</div>
+<section id="profilePanel"><div class="profilehead"><label class="profile-picker" for="profileRoute"><span>Høydeprofil</span><select id="profileRoute" aria-label="Velg høydekurve"></select></label><span id="profileReadout">Pek på profilen for å finne et sted på kartet</span></div><canvas id="profile"></canvas></section>
+<script>
+"use strict";
+(async()=>{
+ const $=id=>document.getElementById(id), status=$('status');
+ const fail=e=>{console.error(e);status.textContent='Kunne ikke starte visningen: '+(e.message||e)+'.';};
+ try{
+  if(!window.Cesium)throw new Error('CesiumJS ble ikke lastet fra CDN');
+  const embedded=window.PASSAGE_EMBEDDED;
+  const json=async url=>{const r=await fetch(url);if(!r.ok)throw new Error(url+': HTTP '+r.status);return r.json();};
+  const data=embedded?embedded.data:await json('viewer_data.json'), summary=data.summary, meta=data.terrain;
+  let bytes;
+  if(embedded){
+   const binary=atob(embedded.terrain_base64),decoded=new Uint8Array(binary.length);
+   for(let i=0;i<binary.length;i++)decoded[i]=binary.charCodeAt(i);bytes=decoded.buffer;
+  }else{
+   const rawResponse=await fetch(meta.raw_file);if(!rawResponse.ok)throw new Error('Mangler terrengfil');bytes=await rawResponse.arrayBuffer();
+  }
+  if(bytes.byteLength!==meta.width*meta.height*4)throw new Error('Terrengfilen har feil lengde');
+  let heights=new Float32Array(bytes);
+  if(new Uint8Array(new Uint16Array([1]).buffer)[0]!==1){const dv=new DataView(bytes);heights=Float32Array.from({length:meta.width*meta.height},(_,i)=>dv.getFloat32(4*i,true));}
+  const radians=Cesium.Math.toRadians, degrees=Cesium.Math.toDegrees;
+  const rectangle=Cesium.Rectangle.fromDegrees(meta.west,meta.south,meta.east,meta.north);
+  function sample(lon,lat){
+   if(lon<meta.west||lon>meta.east||lat<meta.south||lat>meta.north)return undefined;
+   const col=Math.min(meta.width-1,Math.max(0,(lon-meta.west)/(meta.east-meta.west)*meta.width-.5));
+   const row=Math.min(meta.height-1,Math.max(0,(meta.north-lat)/(meta.north-meta.south)*meta.height-.5));
+   const c=Math.floor(col),r=Math.floor(row),c1=Math.min(c+1,meta.width-1),r1=Math.min(r+1,meta.height-1);
+   const fc=col-c,fr=row-r;
+   const vals=[heights[r*meta.width+c],heights[r*meta.width+c1],heights[r1*meta.width+c],heights[r1*meta.width+c1]];
+   const weights=[(1-fc)*(1-fr),fc*(1-fr),(1-fc)*fr,fc*fr];
+   let sum=0,w=0;for(let i=0;i<4;i++){if(Number.isFinite(vals[i])){sum+=weights[i]*vals[i];w+=weights[i];}}
+   return w>0?sum/w:undefined;
+  }
+  let exaggeration=3;
+  const scheme=new Cesium.GeographicTilingScheme();
+  function makeTerrain(){
+   const factor=exaggeration, tileSide=65;
+   return new Cesium.CustomHeightmapTerrainProvider({width:tileSide,height:tileSide,tilingScheme:scheme,
+    credit:'Terreng: opplastet '+summary.input.source_filename+' · rå rasterhøyder, lokal visningsreferanse',
+    callback:(x,y,level)=>{
+     const rect=scheme.tileXYToRectangle(x,y,level), h=new Float32Array(tileSide*tileSide);
+     if(!Cesium.Rectangle.intersection(rect,rectangle))return h;
+     for(let r=0;r<tileSide;r++){
+      const lat=degrees(rect.north-r/(tileSide-1)*(rect.north-rect.south));
+      for(let c=0;c<tileSide;c++){
+       const lon=degrees(rect.west+c/(tileSide-1)*(rect.east-rect.west));
+       const z=sample(lon,lat);h[r*tileSide+c]=Number.isFinite(z)?z*factor:0;
+      }
+     }return h;
+    }});
+  }
+  Cesium.Ion.defaultAccessToken='';
+  const viewer=new Cesium.Viewer('globe',{terrainProvider:makeTerrain(),baseLayer:false,
+   baseLayerPicker:false,geocoder:false,animation:false,timeline:false,sceneModePicker:false,
+   navigationHelpButton:false,homeButton:false,fullscreenButton:true,infoBox:false,
+   selectionIndicator:false,skyBox:false,requestRenderMode:true,maximumRenderTimeChange:Infinity});
+  // Expose inspection handles for integration/testing; no API tokens or private data.
+  window.passageViewer=viewer;window.passageData=data;window.passageSample=sample;
+  viewer.scene.globe.enableLighting=false;
+  viewer.scene.globe.depthTestAgainstTerrain=false;
+  viewer.scene.globe.maximumScreenSpaceError=2;
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance=60;
+  viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#111b27');
+  const embeddedAssetUrls={};
+  function asset(name){
+   if(!embedded)return name;if(embeddedAssetUrls[name])return embeddedAssetUrls[name];
+   const encoded=embedded.images[name].split(',')[1],binary=atob(encoded),bytes=new Uint8Array(binary.length);
+   for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+   return embeddedAssetUrls[name]=URL.createObjectURL(new Blob([bytes],{type:'image/png'}));
+  }
+  const hill=viewer.imageryLayers.addImageryProvider(await Cesium.SingleTileImageryProvider.fromUrl(asset('hillshade.png'),{rectangle}));
+  const connectedLayers=[];
+  for(let i=0;i<meta.levels.length;i++){
+   const p=await Cesium.SingleTileImageryProvider.fromUrl(asset(meta.levels[i].file),{rectangle});
+   const layer=viewer.imageryLayers.addImageryProvider(p);layer.alpha=.65;layer.show=i===2;connectedLayers.push(layer);
+   const option=document.createElement('option');option.value=i;option.textContent=meta.levels[i].label;$('level').appendChild(option);
+  }
+  $('level').value='2';
+  function updateLevel(){
+   const selected=Number($('level').value), show=$('showConnected').checked;
+   connectedLayers.forEach((layer,i)=>layer.show=show&&i===selected);
+   const connected=meta.levels[selected].connected;
+   $('connectivity').textContent=connected?'Forbindelse mellom alle oppgitte punkter ved dette nivået.':'Ingen sammenhengende forbindelse mellom alle punktene ved dette nivået.';
+   $('connectivity').style.borderLeftColor=connected?'#29d4c5':'#ffb65c';viewer.scene.requestRender();
+  }
+  $('level').onchange=updateLevel;$('showConnected').onchange=updateLevel;updateLevel();
+  $('ceiling').textContent=summary.minimum_ceiling_native_m.toFixed(1)+' m';
+  $('length').textContent=(summary.path.length_m/1000).toFixed(1)+' km';
+  $('directMax').textContent=summary.straight_reference.max_height_native_m.toFixed(1)+' m';
+  $('resolution').textContent=summary.input.pixel_size_m[0]+' m';
+  $('displayInfo').textContent='Analysen: '+summary.input.pixel_size_m[0]+' m originalraster. 3D-visning: ca. '+meta.approximate_display_spacing_m.toFixed(0)+' m reprojisert visningsraster. Profiltallene påvirkes ikke av forstørrelsen.';
+  const colors=[Cesium.Color.fromCssColorString('#29d4c5'),Cesium.Color.fromCssColorString('#ffb65c'),Cesium.Color.fromCssColorString('#ce9dff')];
+  const routeEntities=[],plateauEntities=[],markers=[];
+  function positions(points,lift=8){return points.map(p=>Cesium.Cartesian3.fromDegrees(p[0],p[1],(p[2]||0)*exaggeration+lift));}
+  for(let i=0;i<data.routes.length;i++){
+   const route=data.routes[i];
+   const ent=viewer.entities.add({name:route.name,show:i!==2,polyline:{positions:positions(route.points),
+    width:i===0?4:2.5,arcType:Cesium.ArcType.NONE,material:colors[i],depthFailMaterial:colors[i]}});
+   routeEntities.push(ent);
+  }
+  const plateauJSON=embedded?embedded.plateaus:await json('critical_plateaus.geojson');
+  const critical=summary.critical_plateaus.find(p=>p.direct_bridge)||summary.critical_plateaus[0];
+  for(const f of plateauJSON.features){
+   if(!f.properties.direct_bridge)continue;
+   const rings=f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.coordinates;
+   for(const polygon of rings){
+    const hierarchy=new Cesium.PolygonHierarchy(Cesium.Cartesian3.fromDegreesArray(polygon[0].flat()));
+    const ent=viewer.entities.add({name:'Kritisk terskelplatå',polygon:{hierarchy,height:summary.minimum_ceiling_native_m*exaggeration+4,
+      material:Cesium.Color.fromCssColorString('#ffe675').withAlpha(.8),outline:true,outlineColor:Cesium.Color.WHITE}});
+    ent._payload=f.properties;plateauEntities.push(ent);
+   }
+  }
+  function addMarker(lon,lat,z,label,payload,color=Cesium.Color.WHITE){
+   const ent=viewer.entities.add({name:label,position:Cesium.Cartesian3.fromDegrees(lon,lat,z*exaggeration+16),
+    point:{pixelSize:9,color,outlineColor:Cesium.Color.BLACK,outlineWidth:2,disableDepthTestDistance:Infinity},
+    label:{text:label,font:'14px sans-serif',fillColor:color,style:Cesium.LabelStyle.FILL_AND_OUTLINE,
+     outlineWidth:4,outlineColor:Cesium.Color.BLACK,pixelOffset:new Cesium.Cartesian2(10,-18),
+     horizontalOrigin:Cesium.HorizontalOrigin.LEFT,disableDepthTestDistance:Infinity}});
+   ent._payload=payload;markers.push({ent,lon,lat,z});return ent;
+  }
+  summary.points.forEach((p,i)=>addMarker(p.cell_center_longitude,p.cell_center_latitude,p.height_native_m,
+    i===0?'Heradsbygd':(i===summary.points.length-1?'Kolomoen':'Via '+i),p));
+  let saddleMarker;
+  if(critical)saddleMarker=addMarker(critical.longitude,critical.latitude,critical.height_native_m,
+    'Terskel '+critical.height_native_m.toFixed(1)+' m',critical,Cesium.Color.fromCssColorString('#ffe675'));
+  const hover=viewer.entities.add({show:false,position:Cesium.Cartesian3.ZERO,
+    point:{pixelSize:10,color:Cesium.Color.WHITE,outlineColor:Cesium.Color.fromCssColorString('#29d4c5'),outlineWidth:3,disableDepthTestDistance:Infinity}});
+  const toggleRoute=(id,index)=>{$(id).onchange=()=>{if(routeEntities[index])routeEntities[index].show=$(id).checked;viewer.scene.requestRender();};};
+  toggleRoute('showRoute',0);toggleRoute('showReference',1);toggleRoute('showAlternate',2);
+  if(!routeEntities[2]){$('showAlternate').disabled=true;}
+  $('showPlateau').onchange=()=>{plateauEntities.forEach(e=>e.show=$('showPlateau').checked);if(saddleMarker)saddleMarker.show=$('showPlateau').checked;viewer.scene.requestRender();};
+  $('exaggeration').onchange=()=>{
+   exaggeration=Number($('exaggeration').value);viewer.terrainProvider=makeTerrain();
+   routeEntities.forEach((e,i)=>e.polyline.positions=positions(data.routes[i].points));
+   markers.forEach(m=>m.ent.position=Cesium.Cartesian3.fromDegrees(m.lon,m.lat,m.z*exaggeration+16));
+   plateauEntities.forEach(e=>e.polygon.height=summary.minimum_ceiling_native_m*exaggeration+4);
+   hover.show=false;$('legend').textContent='Eget DTM · ingen Cesium World Terrain · høydeforstørrelse '+exaggeration+'×';viewer.scene.requestRender();
+  };
+  const basemapLayers={};
+  const basemapOptions={
+   arcgis:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',maximumLevel:19,credit:'Esri, Maxar, Earthstar Geographics, and the GIS User Community',label:'ArcGIS World Imagery'},
+   osm:{url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',maximumLevel:19,credit:'© OpenStreetMap contributors',label:'OpenStreetMap'}
+  };
+  function getBasemap(name){
+   if(basemapLayers[name])return basemapLayers[name];
+   const option=basemapOptions[name];
+   const provider=new Cesium.UrlTemplateImageryProvider({url:option.url,maximumLevel:option.maximumLevel,credit:option.credit});
+   provider.errorEvent.addEventListener(()=>{status.textContent=option.label+' kunne ikke lastes. Egne terrengdata er fortsatt tilgjengelige.';});
+   const layer=viewer.imageryLayers.addImageryProvider(provider,0);layer.show=false;basemapLayers[name]=layer;return layer;
+  }
+  function updateBasemap(){
+   const enabled=$('showBasemap').checked,name=$('basemap').value,opacity=Number($('basemapOpacity').value)/100;
+   if(enabled)getBasemap(name);
+   Object.entries(basemapLayers).forEach(([key,layer])=>{layer.show=enabled&&key===name;layer.alpha=opacity;});
+   hill.alpha=enabled?1-opacity*.65:1;
+   $('basemap').disabled=!enabled;$('basemapOpacity').disabled=!enabled;
+   $('basemapOpacityValue').textContent=Math.round(opacity*100)+' %';viewer.scene.requestRender();
+  }
+  $('showBasemap').onchange=updateBasemap;$('basemap').onchange=updateBasemap;$('basemapOpacity').oninput=updateBasemap;updateBasemap();
+  const overviewPoints=data.routes[0].points;
+  const profileNames=['Laveste passasje','Rett referanselinje','Dal nær (Indigo Valley Line)'];
+  data.routes.forEach((route,i)=>{const option=document.createElement('option');option.value=i;option.textContent=profileNames[i]||route.name;$('profileRoute').appendChild(option);});
+  let profileIndex=0,p=overviewPoints;
+  const lonMin=Math.min(...overviewPoints.map(v=>v[0])),lonMax=Math.max(...overviewPoints.map(v=>v[0]));
+  const latMin=Math.min(...overviewPoints.map(v=>v[1])),latMax=Math.max(...overviewPoints.map(v=>v[1]));
+  const centreLon=(lonMin+lonMax)/2,centreLat=(latMin+latMax)/2;
+  const sceneSpan=Math.max((lonMax-lonMin)*111320*Math.cos(radians(centreLat)),(latMax-latMin)*111320);
+  function look(lon,lat,range,pitch){
+   const h=sample(lon,lat)||0;
+   viewer.camera.lookAt(Cesium.Cartesian3.fromDegrees(lon,lat,h*exaggeration),new Cesium.HeadingPitchRange(0,radians(pitch),range));
+   viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);viewer.scene.requestRender();
+  }
+  $('overview').onclick=()=>look(centreLon,centreLat,sceneSpan*1.65,-58);
+  $('top').onclick=()=>look(centreLon,centreLat,sceneSpan*1.65,-90);
+  $('saddle').onclick=()=>{if(critical)look(critical.longitude,critical.latitude,2200,-58);};
+  $('overview').click();
+  const clicker=new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  clicker.setInputAction(event=>{
+   const picked=viewer.scene.pick(event.position),payload=picked?.id?._payload;
+   if(payload){$('picked').textContent=JSON.stringify(payload,null,2).replace(/[{}\"]/g,'');return;}
+   const ray=viewer.camera.getPickRay(event.position),hit=ray&&viewer.scene.globe.pick(ray,viewer.scene);
+   if(!hit)return;const carto=Cesium.Cartographic.fromCartesian(hit),lon=degrees(carto.longitude),lat=degrees(carto.latitude),z=sample(lon,lat);
+   $('picked').textContent=lat.toFixed(6)+' N, '+lon.toFixed(6)+' E\n'+(Number.isFinite(z)?'Visningsraster, interpolert: ca. '+z.toFixed(1)+' native m\nIkke en ny prøve av originalrasteret.':'Utenfor gyldig terrengutsnitt.');
+  },Cesium.ScreenSpaceEventType.LEFT_CLICK);
+  // Interactive profile is plotted from every original route cell; no display resampling of heights.
+  const canvas=$('profile'),ctx=canvas.getContext('2d');let chartGeometry,hoverIndex=-1;
+  function drawProfile(){
+   const dpr=window.devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;
+   canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+   const pad={l:43,r:14,t:9,b:25},plotW=w-pad.l-pad.r,plotH=h-pad.t-pad.b;
+   const zMin=Math.floor((Math.min(...p.map(v=>v[2]))-5)/10)*10,zMax=Math.ceil((Math.max(...p.map(v=>v[2]))+8)/10)*10;
+   const xmax=p[p.length-1][3],xx=d=>pad.l+d/xmax*plotW,yy=z=>pad.t+(zMax-z)/(zMax-zMin)*plotH;
+   chartGeometry={xx,yy,xmax,left:pad.l,width:plotW};
+   ctx.clearRect(0,0,w,h);ctx.font='10px system-ui';ctx.textAlign='right';ctx.fillStyle='#a8bcc8';ctx.strokeStyle='#314453';ctx.lineWidth=1;
+   for(let z=zMin;z<=zMax;z+=20){ctx.beginPath();ctx.moveTo(pad.l,yy(z));ctx.lineTo(w-pad.r,yy(z));ctx.stroke();ctx.fillText(z+' m',pad.l-6,yy(z)+3);}
+   ctx.textAlign='center';for(let d=0;d<=xmax;d+=5000)ctx.fillText((d/1000)+' km',xx(d),h-6);
+   ctx.setLineDash([5,4]);ctx.strokeStyle='#ffb65c';ctx.beginPath();ctx.moveTo(pad.l,yy(summary.minimum_ceiling_native_m));ctx.lineTo(w-pad.r,yy(summary.minimum_ceiling_native_m));ctx.stroke();ctx.setLineDash([]);
+   ctx.strokeStyle=['#29d4c5','#ffb65c','#8f7cff'][profileIndex]||'#29d4c5';ctx.lineWidth=1.7;ctx.beginPath();p.forEach((v,i)=>i?ctx.lineTo(xx(v[3]),yy(v[2])):ctx.moveTo(xx(v[3]),yy(v[2])));ctx.stroke();
+   if(hoverIndex>=0){const v=p[hoverIndex];ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(xx(v[3]),yy(v[2]),4,0,2*Math.PI);ctx.fill();}
+  }
+  canvas.addEventListener('mousemove',event=>{
+   if(!chartGeometry)return;const rect=canvas.getBoundingClientRect(),g=chartGeometry;
+   const distance=Math.max(0,Math.min(g.xmax,(event.clientX-rect.left-g.left)/g.width*g.xmax));
+   let lo=0,hi=p.length-1;while(lo<hi){const mid=(lo+hi)>>1;if(p[mid][3]<distance)lo=mid+1;else hi=mid;}
+   hoverIndex=lo;const v=p[lo];$('profileReadout').textContent=(v[3]/1000).toFixed(2)+' km · '+v[2].toFixed(1)+' m · '+v[1].toFixed(5)+' N, '+v[0].toFixed(5)+' E';
+   hover.position=Cesium.Cartesian3.fromDegrees(v[0],v[1],v[2]*exaggeration+22);hover.show=true;drawProfile();viewer.scene.requestRender();
+  });
+  canvas.addEventListener('mouseleave',()=>{hoverIndex=-1;hover.show=false;drawProfile();viewer.scene.requestRender();});
+  $('profileRoute').onchange=()=>{profileIndex=Number($('profileRoute').value);p=data.routes[profileIndex].points;hoverIndex=-1;hover.show=false;$('profileReadout').textContent='Pek på profilen for å finne et sted på kartet';drawProfile();viewer.scene.requestRender();};
+  new ResizeObserver(drawProfile).observe(canvas);drawProfile();
+  status.textContent='';window.passageReady=true;
+ }catch(error){fail(error);window.passageError=String(error);}
+})();
+</script>
+</body></html>

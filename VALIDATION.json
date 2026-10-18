@@ -1,0 +1,21 @@
+{
+  "input_sha256": "8175b418cbfbb758b635c0a85424637c0ee9d51af6c1c3d668859cb54e4d1e2a",
+  "native_raster_run": "PASS",
+  "minimax_random_exhaustive_cases": 120,
+  "astar_independent_scipy_dijkstra_cases": 50,
+  "no_corner_cutting": "PASS",
+  "nodata_negative_heights_endpoint_and_via_cases": "PASS",
+  "critical_plateau_removal_disconnects_at_ceiling": true,
+  "csv_geojson_display_grid_and_hash_checks": "PASS",
+  "javascript_syntax_node": "PASS",
+  "local_http_launcher": "PASS",
+  "full_browser_3d_test": "NOT COMPLETED: browser navigation blocked by administrator policy; no rendering claim",
+  "source_crs_declared_id": {
+    "authority": "EPSG",
+    "code": 3044
+  },
+  "resolved_horizontal_authority": [
+    "EPSG",
+    "25832"
+  ]
+}

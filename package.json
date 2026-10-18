@@ -1,0 +1,55 @@
+{
+  "name": "heradsbygd-kolomoen",
+  "version": "1.1.0",
+  "description": "Desktop viewer for the Heradsbygd–Kolomoen terrain-passage analysis",
+  "main": "desktop/main.js",
+  "author": "Heradsbygd–Kolomoen project",
+  "license": "UNLICENSED",
+  "scripts": {
+    "prepare:viewer": "node desktop/copy-cesium.js",
+    "start": "npm run prepare:viewer && electron .",
+    "dist": "npm run prepare:viewer && electron-builder",
+    "dist:linux": "npm run prepare:viewer && electron-builder --linux AppImage",
+    "dist:win": "npm run prepare:viewer && electron-builder --win nsis",
+    "dist:mac": "npm run prepare:viewer && electron-builder --mac dmg"
+  },
+  "devDependencies": {
+    "cesium": "1.145.0",
+    "electron": "39.2.7",
+    "electron-builder": "26.0.12"
+  },
+  "build": {
+    "appId": "no.heradsbygd.kolomoen",
+    "productName": "Heradsbygd Kolomoen",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "files": [
+      "desktop/main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "results",
+        "to": "results",
+        "filter": [
+          "**/*",
+          "!Heradsbygd-Kolomoen.html"
+        ]
+      }
+    ],
+    "linux": {
+      "target": "AppImage",
+      "category": "Science"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.education"
+    }
+  }
+}

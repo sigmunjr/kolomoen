@@ -1,0 +1,4 @@
+plateau_id,direct_bridge,necessary_at_ceiling,route_intersects,cells,raster_support_area_m2,height_native_m,longitude,latitude,easting_m,northing_m,extent_east_west_m,extent_north_south_m,adjacent_subcritical_components
+1547,True,True,True,46,4600.0,222.5,11.526307815267668,60.791223744161336,637510.0,6742180.0,110.0,120.0,1;2
+1488,False,,True,7,700.0,222.5,11.532102801569,60.79246195554263,637820.0,6742330.0,70.0,10.0,2
+1489,False,,True,7,700.0,222.5,11.534488487686723,60.79241692602652,637950.0,6742330.0,70.0,10.0,2

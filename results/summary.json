@@ -1,0 +1,256 @@
+{
+  "software_version": "1.0.0",
+  "created_utc": "2026-09-12T19:14:08.225610+00:00",
+  "objective": "Minimize maximum native raster height; then minimize 8-neighbour planimetric path length, no corner cutting",
+  "input": {
+    "source_filename": "6706_3_10m_z32.tif",
+    "sha256": "8175b418cbfbb758b635c0a85424637c0ee9d51af6c1c3d668859cb54e4d1e2a",
+    "source_shape": [
+      5041,
+      5041
+    ],
+    "analysis_shape": [
+      5041,
+      5041
+    ],
+    "source_crs_wkt": "PROJCS[\"ETRS89 / UTM zone 32N (N-E)\",GEOGCS[\"ETRS89\",DATUM[\"European_Terrestrial_Reference_System_1989\",SPHEROID[\"GRS 1980\",6378137,298.257222101004,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6258\"]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4258\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",9],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"3044\"]]",
+    "source_crs_authority": null,
+    "source_crs_declared_id": {
+      "authority": "EPSG",
+      "code": 3044
+    },
+    "resolved_horizontal_authority": [
+      "EPSG",
+      "25832"
+    ],
+    "source_crs_name": "ETRS89 / UTM zone 32N (N-E)",
+    "crs_note": "The embedded CRS identifier and axis declaration may differ; retain the WKT and use its actual X/Y projection with always_xy=True.",
+    "raster_axis_order": "X=easting, Y=northing; transforms always_xy=True",
+    "transform": [
+      10.0,
+      0.0,
+      599795.0,
+      0.0,
+      -10.0,
+      6750205.0
+    ],
+    "pixel_size_m": [
+      10.0,
+      10.0
+    ],
+    "source_bounds": [
+      599795.0,
+      6699795.0,
+      650205.0,
+      6750205.0
+    ],
+    "analysis_bounds": [
+      599795.0,
+      6699795.0,
+      650205.0,
+      6750205.0
+    ],
+    "source_area_or_point": "Point",
+    "source_nodata": -32767.0,
+    "band_unit": "metre",
+    "source_scale": 1.0,
+    "source_offset": 0.0,
+    "source_tags": {
+      "AREA_OR_POINT": "Point"
+    },
+    "band_tags": {},
+    "vertical_datum": "NOT VERIFIED: no vertical CRS is encoded in the provided file",
+    "vertical_values": "Native raster heights, metres; no geoid/vertical transform applied",
+    "valid_cells": 25411681,
+    "search_buffer_km": null,
+    "analysis_window": [
+      0,
+      0,
+      5041,
+      5041
+    ]
+  },
+  "points": [
+    {
+      "name": "Heradsbygd / start",
+      "requested_latitude": 60.820232979269655,
+      "requested_longitude": 11.635771799665232,
+      "requested_easting_m": 643336.3236474143,
+      "requested_northing_m": 6745643.645051566,
+      "cell_center_latitude": 60.820198962827796,
+      "cell_center_longitude": 11.635836628263558,
+      "cell_center_easting_m": 643340.0,
+      "cell_center_northing_m": 6745640.0,
+      "snap_distance_m": 5.177061835885844,
+      "row": 456,
+      "col": 4354,
+      "height_native_m": 172.89999389648438
+    },
+    {
+      "name": "Kolomoen / end",
+      "requested_latitude": 60.69954161460697,
+      "requested_longitude": 11.265232590579124,
+      "requested_easting_m": 623655.7314426207,
+      "requested_northing_m": 6731453.7825131435,
+      "cell_center_latitude": 60.699506359557276,
+      "cell_center_longitude": 11.265308325825842,
+      "cell_center_easting_m": 623660.0,
+      "cell_center_northing_m": 6731450.0,
+      "snap_distance_m": 5.703331288002063,
+      "row": 1875,
+      "col": 2386,
+      "height_native_m": 184.1999969482422
+    }
+  ],
+  "minimum_ceiling_native_m": 222.5,
+  "previous_distinct_raster_height_m": 222.39999389648438,
+  "raster_4_connected_ceiling_m": 222.5,
+  "permissive_8_connected_ceiling_m": 222.5,
+  "path": {
+    "length_m": 29105.54616082495,
+    "vertices": 2569,
+    "min_height_native_m": 150.0,
+    "max_height_native_m": 222.5
+  },
+  "valley_alternative": {
+    "length_m": 30791.505037879102,
+    "vertices": 2796,
+    "min_height_native_m": 148.0,
+    "max_height_native_m": 222.5,
+    "weight": 2.0,
+    "weighted_cost": 54469.12280255023
+  },
+  "straight_reference": {
+    "length_m": 24262.68551481281,
+    "max_height_native_m": 345.1000061035156,
+    "control_points": 27,
+    "sampled_profile_points": 487,
+    "profile_spacing_m": 50.0,
+    "crossed_cell_samples": 3390,
+    "note": "NEW straight UTM line through user coordinates, NOT the unavailable historical 27 points"
+  },
+  "critical_plateaus": [
+    {
+      "plateau_id": 1547,
+      "direct_bridge": true,
+      "necessary_at_ceiling": true,
+      "route_intersects": true,
+      "cells": 46,
+      "raster_support_area_m2": 4600.0,
+      "height_native_m": 222.5,
+      "longitude": 11.526307815267668,
+      "latitude": 60.791223744161336,
+      "easting_m": 637510.0,
+      "northing_m": 6742180.0,
+      "extent_east_west_m": 110.0,
+      "extent_north_south_m": 120.0,
+      "adjacent_subcritical_components": "1;2"
+    },
+    {
+      "plateau_id": 1488,
+      "direct_bridge": false,
+      "necessary_at_ceiling": null,
+      "route_intersects": true,
+      "cells": 7,
+      "raster_support_area_m2": 700.0,
+      "height_native_m": 222.5,
+      "longitude": 11.532102801569,
+      "latitude": 60.79246195554263,
+      "easting_m": 637820.0,
+      "northing_m": 6742330.0,
+      "extent_east_west_m": 70.0,
+      "extent_north_south_m": 10.0,
+      "adjacent_subcritical_components": "2"
+    },
+    {
+      "plateau_id": 1489,
+      "direct_bridge": false,
+      "necessary_at_ceiling": null,
+      "route_intersects": true,
+      "cells": 7,
+      "raster_support_area_m2": 700.0,
+      "height_native_m": 222.5,
+      "longitude": 11.534488487686723,
+      "latitude": 60.79241692602652,
+      "easting_m": 637950.0,
+      "northing_m": 6742330.0,
+      "extent_east_west_m": 70.0,
+      "extent_north_south_m": 10.0,
+      "adjacent_subcritical_components": "2"
+    }
+  ],
+  "connectivity_checks": [
+    {
+      "height_native_m": 221.5,
+      "connected": false,
+      "start_component": 2,
+      "end_component": 1
+    },
+    {
+      "height_native_m": 222.39999389648438,
+      "connected": false,
+      "start_component": 2,
+      "end_component": 1
+    },
+    {
+      "height_native_m": 222.5,
+      "connected": true,
+      "start_component": 1,
+      "end_component": 1
+    },
+    {
+      "height_native_m": 223.5,
+      "connected": true,
+      "start_component": 1,
+      "end_component": 1
+    },
+    {
+      "height_native_m": 227.5,
+      "connected": true,
+      "start_component": 1,
+      "end_component": 1
+    }
+  ],
+  "critical_component_area_within_tile_m2": 731824400.0,
+  "boundary_status_below_ceiling": {
+    "start": {
+      "present": true,
+      "touches_edge": true,
+      "touches_nodata": false
+    },
+    "end": {
+      "present": true,
+      "touches_edge": true,
+      "touches_nodata": false
+    }
+  },
+  "boundary_warning": "Both subcritical endpoint components touch the analysis boundary or NoData. A lower route outside the supplied/selected domain is not ruled out.",
+  "downhill_bed_test": {
+    "start_to_end": "ruled_out_by_height_ceiling",
+    "end_to_start": "ruled_out_by_height_ceiling"
+  },
+  "caveats": [
+    "This is a topographic sublevel-connectivity test, not a hydraulic model or proof of a former river.",
+    "The threshold permits zero-depth contact; positive flow requires additional head and a finite cross-section.",
+    "Water direction, ice dams, erosion history, deposits, and time-varying topography are not reconstructed.",
+    "No sink filling, stream burning, smoothing, or manual lowering of roads/embankments is applied.",
+    "A centreline is not unique and its bends depend on raster topology and secondary cost.",
+    "10 m horizontal spacing and decimal raster values do not imply decimetre vertical accuracy.",
+    "No bathymetry is inferred from apparent lake surfaces in the terrain raster.",
+    "GeoJSON geometry is 2D; native, non-ellipsoidal elevations are stored as explicit properties.",
+    "Viewer terrain is display-only and uses native heights as local display heights; absolute globe altitude is not geodetically corrected."
+  ],
+  "python": "3.13.5",
+  "libraries": {
+    "numpy": "2.3.5",
+    "rasterio": "1.5.0"
+  },
+  "astar_expanded_nodes": 424758,
+  "viewer": {
+    "approximate_display_spacing_m": 14.3827097777015,
+    "cesium_version": "1.145",
+    "ion_token_required": false,
+    "note": "CDN internet access required unless Cesium assets are hosted locally"
+  },
+  "elapsed_seconds": 17.6229190826416
+}
