@@ -6,6 +6,7 @@
   "author": "Heradsbygd–Kolomoen project",
   "license": "UNLICENSED",
   "scripts": {
+    "build:pages": "node scripts/build-pages.js",
     "prepare:viewer": "node desktop/copy-cesium.js",
     "start": "npm run prepare:viewer && electron .",
     "dist": "npm run prepare:viewer && electron-builder",

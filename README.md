@@ -1,12 +1,55 @@
 # Laveste terrengpassasje: Heradsbygd–Kolomoen
 
 Pakken inneholder ferdig beregnede resultater, et selvstendig Python-skript og en
-installerbar skrivebordsviser bygget med Node.js/Electron.
+installerbar skrivebordsviser bygget med Node.js/Electron, og en statisk nettviser
+som kan publiseres på GitHub Pages.
 
 **Resultat for den opplastede filen:** minste sammenhengende rasterterskel **222,5 m**;
 representativ korteste rute ved denne terskelen **29,106 km**. Ved **222,4 m** er
 endepunktene adskilt. Det avgjørende rasterområdet ligger rundt **60.79122 N, 11.52631 E**.
 Se `results/RESULTAT.md` for metode, metadata, høydeforbehold og hva dette ikke beviser.
+
+## GitHub Pages
+
+Nettviseren publiseres på **https://sigmunjr.github.io/kolomoen/**.
+Hele 3D-viseren, egne terrengdata, nedlastinger og alle tre høydeprofiler fungerer
+direkte i nettleseren. Det krever verken installasjon, Python-server eller
+Cesium ion-token. ArcGIS og OpenStreetMap hentes fortsatt fra sine nettjenester.
+
+### Første gangs oppsett
+
+1. Push prosjektet og `.github/workflows/pages.yml` til `main` på GitHub.
+2. Åpne [Settings → Pages](https://github.com/sigmunjr/kolomoen/settings/pages).
+   Under **Build and deployment → Source**, velg **GitHub Actions**.
+3. Åpne [Actions](https://github.com/sigmunjr/kolomoen/actions), velg
+   **Deploy viewer to GitHub Pages**, og kjør **Run workflow** dersom en kjøring
+   ikke allerede er i gang. Vent til både `build` og `deploy` er grønne.
+4. Åpne https://sigmunjr.github.io/kolomoen/.
+
+Ingen egne secrets, tilgangstokener, ion-konto eller `gh-pages`-gren trengs.
+Workflowen bruker GitHubs innebygde `GITHUB_TOKEN`. Senere push til `main`
+bygger og publiserer nettstedet automatisk. Pull requests bygger og validerer
+nettstedet uten å publisere det.
+
+### Bygg og prøv lokalt
+
+```bash
+npm ci --ignore-scripts
+npm run build:pages
+python3 -m http.server 8000 --bind 127.0.0.1 --directory dist
+```
+
+Åpne http://localhost:8000/pages/. `dist/pages` inneholder den ferdige statiske
+siden. Alle adresser, også Cesiums worker- og teksturfiler, er relative til siden
+og fungerer under prosjektstien `/kolomoen/` eller på et eget domene.
+Bygget inkluderer Cesiums lisens og de nødvendige `Workers`, `Assets`,
+`ThirdParty` og `Widgets`, men utelater den eldre innebygde HTML-filen og
+analyse-GeoTIFF-en. Terrengdataene må være faktiske filer, ikke Git LFS-pekere;
+workflowen henter LFS-data dersom det senere tas i bruk.
+
+Ved feil: se `build`/`deploy`-loggen i Actions og kontroller at Source fremdeles
+er **GitHub Actions**. Hvis kartet er tomt, bruk en nettleser med WebGL og
+maskinvareakselerasjon. Bakgrunnskart kan slås av for å bruke bare egne terrengdata.
 
 ## 1. Installer eller start skrivebordsappen
 
